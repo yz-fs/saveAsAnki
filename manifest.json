@@ -1,0 +1,24 @@
+{
+    "manifest_version": 3,
+    "name": "collins german-english to anki deck",
+    "version": "1.1",
+    "description": "convert to anki note",
+    "content_scripts": [
+        {
+        "js": [
+            "./scripts/FileSaver.min.js",
+            "./scripts/jszip.min.js",
+            "./scripts/sql.js",
+            "./scripts/genanki.js",
+            "./scripts/content.js"
+        ],
+        "matches": [
+            "https://www.collinsdictionary.com/dictionary/german-english/*"
+        ],
+        "run_at": "document_idle"
+        }
+    ],
+    "permissions": [
+        "storage", "tabs"
+    ]
+}
