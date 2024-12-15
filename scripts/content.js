@@ -53,8 +53,9 @@ function gw() {
         var w = ws[i].innerText;
         var pron = prons[i].innerText;
         var def = defs[i].innerHTML;
-        var sdef = '';
-        xp('//*[@class="anchor"][contains(@id, "__'+(i+1).toString()+'")]/../div[contains(@class, "definition")]/div[@class="hom"]/div[contains(@class, "sense")]/span[contains(@class, "bold") or contains(@class, "type-translation")]').forEach(element => {
+        var sdef = ''; 
+        // xp('//*[@class="anchor"][contains(@id, "__'+(i+1).toString()+'")]/../div[contains(@class, "definition")]/div[contains(@class, "hom")]/div[contains(@class, "sense")]/span[contains(@class, "bold") or contains(@class, "type-translation")]').forEach(element => {
+        xp('//*[@class="anchor"][contains(@id, "__'+(i+1).toString()+'")]/../div[contains(@class, "definition")]/div[contains(@class, "hom")]/*[contains(@class, "sense") or contains(@class, "bold") or contains(@class, "type-translation")]/*[contains(@class, "sense") or contains(@class, "bold") or contains(@class, "type-translation") or contains(@class, "quote")]').forEach(element => {
             if (element.className.includes('bold') && !element.innerText.includes('1')) {
                 sdef += '<br>' + element.innerText + '. ';
             } else if (element.className.includes('bold') && element.innerText.includes('1')) {
@@ -63,6 +64,7 @@ function gw() {
                 sdef += element.innerText + ', ';
             }
         });
+        sdef += '\n';
         console.log([w, pron, def, sdef]);
         notes.push([w, pron, def, sdef]);
     }
@@ -102,6 +104,7 @@ var m1 = new Model({
     ],
     req: [
         [0, "all", [0]],
+        [ 1, "all", [ 1 ] ]
     ],
     tmpls: [
         {
@@ -112,7 +115,7 @@ var m1 = new Model({
         {
             name: "Card 2",
             qfmt: "{{sdef}}",
-            afmt: "{{sdef}}\n\n<hr id=answer>\n\n{{pron}}\n\n{{word}}",
+            afmt: "{{sdef}}\n\n<hr id=answer>\n\n{{word}}\n\n{{pron}}\n\n{{def}}",
         }
     ],
 })
@@ -122,12 +125,12 @@ function exportDeck() {
     chrome.storage.local.get("d").then((fr) => {
         deck = new Deck(Math.floor(Math.random() * (1999999999999 - 1000000000000 + 1)) + 1000000000000, document.getElementById('deck_name').value);
         fr.d.forEach(element => {
-            deck.addNote(m1.note(element), document.getElementById('note_tags').value.split(','));
+            deck.addNote(m1.note(element),);
         });
     });
     var p = new Package();
     p.addDeck(deck);
-    p.writeToFile('deck.apkg');
+    p.writeToFile(document.getElementById('note_tags').value+'.apkg');
 }
 function delNote() {
     var count = 0;
@@ -212,6 +215,7 @@ function start() {
     var tags = document.createElement("INPUT");
     tags.setAttribute("type", "text");
     tags.setAttribute("id", "note_tags");
+    tags.setAttribute("value", "deck");
     xp('//*[@class="res_cell_right"]')[0].appendChild(tags);
 
     var new_div = document.createElement('div');
